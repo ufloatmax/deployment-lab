@@ -96,19 +96,6 @@ Based on 6 days of production testing:
 | Delivery frequency | Daily |
 | Testing period | 6+ days (active) |
 
----
-
-## Future Roadmap
-
-The information-gathering layer of this workflow could feed into a future Early Warning Indicator (EWI) engine:
-
-- **EWI Engine**: Extend sector monitoring to detect market anomalies, regulatory shifts, and supply chain signals
-- **Multi-region support**: Expand geographic coverage beyond current scope
-- **Formatter stability**: Replace Qwen with a more constrained structured-output approach (JSON schema enforcement)
-- **Personalization**: Role-based briefing profiles (sector-specific digests per team)
-
----
-
 ## Lessons Learnt
 
 1. **FM model capacity matters end-to-end** — context window size and reasoning quality both affect final output structure
