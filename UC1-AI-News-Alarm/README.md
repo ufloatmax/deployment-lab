@@ -76,7 +76,7 @@ Based on 6 days of production testing:
 
 | Issue | Frequency | Root Cause | Proposed Fix |
 |---|---|---|---|
-| Inconsistent email formatting | ~50% of emails | Non-deterministic LLM output (Qwen) | Stricter prompt constraints + output schema |
+| Inconsistent email formatting | ~10% of emails | Non-deterministic LLM output (Qwen) | Stricter prompt constraints + output schema |
 | Missing hyperlinks in output | Observed instance | Formatter prompt ambiguity | Explicit link inclusion instruction in prompt |
 | Format variation across emails | Observed instances | Temperature / sampling variance | Lower temperature + few-shot examples in prompt |
 
