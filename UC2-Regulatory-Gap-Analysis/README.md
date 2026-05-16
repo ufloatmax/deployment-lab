@@ -2,7 +2,7 @@
 
 > Regulatory Gap Analysis — P&P vs EBA Guidelines
 
-> **Status**: 🔧 Architecture Rebuild | **Platform**: Dify + Claude Sonnet | **Previous Approach**: RAG (abandoned) | **Current Approach**: Two-LLM Pipeline + Iterator
+> **Status**: 🔧 Architecture Rebuild | **Platform**: Dify | **Previous Approach**: RAG (abandoned) | **Current Approach**: Two-LLM Pipeline + Iterator
 
 -----
 
