@@ -94,7 +94,6 @@ Based on production testing:
 | Daily time saved per user | **~0.5 hours** |
 | Geographic focus | EU Region |
 | Delivery frequency | Daily |
-| Testing period | 6+ days (active) |
 
 ## Lessons Learnt
 
