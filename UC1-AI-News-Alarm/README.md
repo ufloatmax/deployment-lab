@@ -4,7 +4,7 @@
 
 ## Overview
 
-AI News Alarm is an automated intelligence briefing workflow that delivers daily structured sector news digests via email. It uses a **dual-LLM agentic architecture**: one model acts as a research agent (tool-calling), the other as a formatter (structured output). The system is deployed and tested over 6+ days in production.
+AI News Alarm is an automated intelligence briefing workflow that delivers daily structured sector news digests via email. It uses a **dual-LLM agentic architecture**: one model acts as a research agent (tool-calling), the other as a formatter (structured output). The system is deployed in production.
 
 **Target**: Multiple industry sectors within the EU region.
 
