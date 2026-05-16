@@ -72,7 +72,7 @@ Increasing to 5,000 tokens improved output quality but did not fully resolve the
 
 ## Known Issues & Improvement Areas
 
-Based on 6 days of production testing:
+Based on production testing:
 
 | Issue | Frequency | Root Cause | Proposed Fix |
 |---|---|---|---|
