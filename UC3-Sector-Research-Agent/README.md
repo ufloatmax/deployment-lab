@@ -130,7 +130,6 @@ The review loop is a core design feature, not optional:
 - [ ] Dify implementation once plugin access approved (adds workflow visibility and audit trail)
 - [ ] Structured time tracking to formalise quantitative impact
 - [ ] Expand sector coverage
-- [ ] Integrate with UC4 EWI Engine — sector risk signals feed into early warning triggers
 
 -----
 
