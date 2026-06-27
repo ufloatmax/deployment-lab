@@ -4,7 +4,7 @@
 
 ## Overview
 
-AI News Alarm is an automated intelligence briefing workflow that delivers daily structured sector news digests via email. It uses a **dual-LLM agentic architecture**: one model acts as a research agent (tool-calling), the other as a formatter (structured output). The system is deployed in production.
+AI News Alarm is an automated intelligence briefing workflow that delivers daily structured sector news digests via email. It uses a **dual-LLM agentic architecture**: one model acts as a research agent (tool-calling), the other as a formatter (structured output). The system is deployed and tested over 6+ days in production.
 
 **Target**: Multiple industry sectors within the EU region.
 
@@ -20,8 +20,8 @@ AI News Alarm is an automated intelligence briefing workflow that delivers daily
                      │
          ┌───────────▼───────────┐
          │   Research Agent      │
-         │   Claude Sonnet 4.6   │  ← Tool-calling + Web search (Tavily)
-         │   max_tokens: 5,000 │
+         │   Claude Sonnet 4.6   │  ← Tool-calling + Web search (Tavily, raw text off)
+         │   max_tokens: 5,000   │
          └───────────┬───────────┘
                      │  Raw structured news data
          ┌───────────▼───────────┐
@@ -42,7 +42,7 @@ A central design decision was choosing the right Foundation Model (FM) for the r
 
 | Parameter | Claude Sonnet 4.6 | Amazon Nova Pro V1 |
 |---|---|---|
-| Max Tokens | 128,000 | 2,048 (default) / 5,000 (tested) |
+| Max Tokens | 5,000 (optimised) | 2,048 (default) / 5,000 (tested) |
 | Reasoning Style | Internal (clean output) | Exposed `<thinking>` tags |
 | Output Quality | Structured, logical | Token leakage of reasoning steps |
 | Tool-Calling | Reliable | Functional but verbose |
@@ -61,7 +61,7 @@ latest events in the specified sectors within the EU region, I will use the
 Increasing to 5,000 tokens improved output quality but did not fully resolve the leakage issue. Claude Sonnet 4.6, by contrast, produces clean, structured output by keeping its reasoning internal:
 
 ```json
-// ✅ Claude Sonnet 4.6 — max_tokens: 128,000
+// ✅ Claude Sonnet 4.6 — max_tokens: 5,000 + Tavily raw text off
 "text": "\nHere is your comprehensive EU region sector news briefing:\n\n
 ---\n\n## 🌱 1. [SECTOR NAME]\n\nTitle: ...\nDate: ...\nSource: ..."
 ```
@@ -70,13 +70,26 @@ Increasing to 5,000 tokens improved output quality but did not fully resolve the
 
 ---
 
-## Known Issues & Improvement Areas
+## Post-Deployment Optimisations
 
-Based on production testing:
+Following extended testing with the internal AI team, two configuration changes improved output quality:
+
+| Parameter | Before | After | Effect |
+|---|---|---|---|
+| Claude max_tokens | 128,000 | 5,000 | Tighter output scope, reduced verbosity |
+| Tavily raw text | On | Off | Cleaner search results passed to research agent |
+
+Both changes were identified through empirical testing rather than design assumption — a reminder that optimal LLM configuration often requires real-world validation.
+
+---
+
+
+
+Based on 6 days of production testing:
 
 | Issue | Frequency | Root Cause | Proposed Fix |
 |---|---|---|---|
-| Inconsistent email formatting | ~10% of emails | Non-deterministic LLM output (Qwen) | Stricter prompt constraints + output schema |
+| Inconsistent email formatting | ~50% of emails | Non-deterministic LLM output (Qwen) | Stricter prompt constraints + output schema |
 | Missing hyperlinks in output | Observed instance | Formatter prompt ambiguity | Explicit link inclusion instruction in prompt |
 | Format variation across emails | Observed instances | Temperature / sampling variance | Lower temperature + few-shot examples in prompt |
 
@@ -94,6 +107,20 @@ Based on production testing:
 | Daily time saved per user | **~0.5 hours** |
 | Geographic focus | EU Region |
 | Delivery frequency | Daily |
+| Testing period | 6+ days (active) |
+
+---
+
+## Future Roadmap
+
+The information-gathering layer of this workflow could feed into a future Early Warning Indicator (EWI) engine:
+
+- **EWI Engine**: Extend sector monitoring to detect market anomalies, regulatory shifts, and supply chain signals
+- **Multi-region support**: Expand geographic coverage beyond current scope
+- **Formatter stability**: Replace Qwen with a more constrained structured-output approach (JSON schema enforcement)
+- **Personalization**: Role-based briefing profiles (sector-specific digests per team)
+
+---
 
 ## Lessons Learnt
 
