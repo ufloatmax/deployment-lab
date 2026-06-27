@@ -85,11 +85,11 @@ Both changes were identified through empirical testing rather than design assump
 
 
 
-Based on 6 days of production testing:
+Based on production testing:
 
 | Issue | Frequency | Root Cause | Proposed Fix |
 |---|---|---|---|
-| Inconsistent email formatting | ~50% of emails | Non-deterministic LLM output (Qwen) | Stricter prompt constraints + output schema |
+| Inconsistent email formatting | ~5% of emails | Non-deterministic LLM output (Qwen) | Stricter prompt constraints + output schema |
 | Missing hyperlinks in output | Observed instance | Formatter prompt ambiguity | Explicit link inclusion instruction in prompt |
 | Format variation across emails | Observed instances | Temperature / sampling variance | Lower temperature + few-shot examples in prompt |
 
@@ -107,7 +107,6 @@ Based on 6 days of production testing:
 | Daily time saved per user | **~0.5 hours** |
 | Geographic focus | EU Region |
 | Delivery frequency | Daily |
-| Testing period | 6+ days (active) |
 
 ---
 
