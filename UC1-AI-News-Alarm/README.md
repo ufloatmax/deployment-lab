@@ -21,7 +21,7 @@ AI News Alarm is an automated intelligence briefing workflow that delivers daily
          ┌───────────▼───────────┐
          │   Research Agent      │
          │   Claude Sonnet 4.6   │  ← Tool-calling + Web search (Tavily)
-         │   max_tokens: 128,000 │
+         │   max_tokens: 5,000 │
          └───────────┬───────────┘
                      │  Raw structured news data
          ┌───────────▼───────────┐
