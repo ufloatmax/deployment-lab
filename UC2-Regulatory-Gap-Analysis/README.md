@@ -1,6 +1,6 @@
 # UC2 Regulatory Gap Analysis — Evidence-Grounded Policy Design Review Workflow
 
-> **Status**: 🔄 V10 component-level workflow in calibration | **Platform**: Microsoft Copilot + Python | **Scope**: Policy design assessment only | **Control Point**: Human reviewer owns final judgement
+> **Status**: 📋 V10 design complete; gold-set calibration next | **Platform**: Microsoft Copilot + Python | **Scope**: Policy design assessment only | **Control Point**: Human reviewer owns final judgement
 
 -----
 
@@ -495,9 +495,9 @@ V10 keeps the evidence discovery improvements, but moves the core judgement to t
 | Project | Status |
 |---|---|
 | AI News Alarm | ✅ Deployed |
-| Regulatory Gap Analysis | 🔄 V10 component-level workflow in calibration |
+| Regulatory Gap Analysis | 📋 V10 design complete; gold-set calibration next |
 | Sector Research Agent | ✅ Deployed |
-| Junior Credit Analyst | 🧪 Workflow testing |
+| New Financing Due Diligence Workflow | ✅ Shared |
 
 -----
 
