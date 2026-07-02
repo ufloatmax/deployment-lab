@@ -1,6 +1,6 @@
-# UC4 Using AI as a Junior Credit Analyst
+# UC4 New Financing Due Diligence Workflow — Using AI as a Junior Credit Analyst
 
-> **Status**: 🧪 Workflow Testing | **Platform**: Microsoft Copilot | **Primary Pattern**: Guided document review + source-cited drafting | **Control Point**: Credit professional owns the risk judgement
+> **Status**: ✅ Shared | **Platform**: Microsoft Copilot | **Primary Pattern**: Guided document review + source-cited drafting | **Control Point**: Credit professional owns the risk judgement
 
 -----
 
