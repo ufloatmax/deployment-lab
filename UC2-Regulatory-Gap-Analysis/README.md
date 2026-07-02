@@ -1,220 +1,462 @@
-# UC2 Regulatory Gap Analysis — From LLM Judgement to Quantitative Scoring
+# UC2 Regulatory Gap Analysis — Evidence-Grounded Policy Design Review Workflow
 
-> **Status**: 🔄 v3 Quantitative Scoring Complete | **Platform**: Microsoft Copilot | **Scope**: Policy design assessment only | **Next Step**: Five-gate coverage decision model
+> **Status**: 🔄 V10 component-level workflow in calibration | **Platform**: Microsoft Copilot + Python | **Scope**: Policy design assessment only | **Control Point**: Human reviewer owns final judgement
 
 -----
 
 ## Overview
 
-This use case automates regulatory gap analysis between internal Policies & Procedures (P&P) and EBA Guidelines on loan origination and monitoring (EBA LOM). The workflow has evolved from a RAG-based comparison, to a decomposed LLM pipeline, and now to a quantified retrieval and scoring model.
+This use case has evolved from a simple RAG experiment into an **evidence-grounded regulatory reasoning workflow** for policy-design gap assessment.
 
-The previous architecture upgrade split applicability judgement and coverage judgement so that each module had one job. The single-requirement end-to-end flow has now been tested. This version continues that work, with two major changes:
+The original assumption was that the problem was mainly about retrieval: load EBA Guidelines on loan origination and monitoring (EBA LOM) and internal Policies & Procedures (P&P) into a knowledge base, retrieve relevant passages, and ask an LLM whether the internal policy covers the regulatory requirement.
 
-- The platform has moved from Dify to Microsoft Copilot.
-- Python-based preprocessing and analysis code is now being developed with GPT-5.5 assistance.
+That turned out to be the wrong task framing. Retrieval can find potentially relevant evidence, but the real problem is deciding whether the evidence is sufficient to cover a regulatory obligation in a way that is traceable, reviewable, and defensible.
 
-The bigger change, however, is conceptual: the workflow now defines much more precisely what it is actually assessing.
-
------
-
-## The Boundary Decision: What Is Being Assessed?
-
-The phrase "does the internal policy meet the regulatory requirement?" sounds simple, but it contains two different questions.
-
-**1. Policy design level**
-
-This asks whether the policy principles are written, procedures are defined, governance routes are clear, responsibilities are assigned, and required wording or components are present in the internal documentation.
-
-**2. Execution level**
-
-This asks whether those policy designs are actually carried out in practice, and whether audit samples or operating evidence can prove execution.
-
-These are different questions. They require different inputs, different analysis logic, and serve different review purposes.
-
-Earlier versions did not separate them clearly enough, so the output could contain findings like:
-
-> "The internal policy covers this regulatory requirement, but audit samples are needed to confirm implementation."
-
-That looks reasonable at first, but it mixes two assessment layers. Missing audit samples are not a policy design gap; they are a separate execution verification question.
-
-This version therefore makes a clear boundary decision:
-
-> **The workflow assesses internal policy design only. It does not assess execution effectiveness.**
-
-Execution evidence can still be flagged as a follow-up verification item, but it should not appear in the policy design gap list.
-
------
-
-## End-to-End Architecture
-
-The current workflow has 13 stages across four phases.
-
-### Phase A — Structuring (S1-S5)
-
-1. Extract 277 atomic EBA LOM regulatory requirements.
-1. Run four-level applicability judgement.
-1. Extract evidence units from internal policy documents.
-1. Build a policy ontology.
-1. Build a cross-reference graph.
-
-### Phase B — Retrieval (S6-S7)
-
-6. Run six-signal quantitative hybrid retrieval.
-1. Build an evidence pack for each applicable regulatory requirement.
-
-### Phase C — Scoring (S8-S11)
-
-8. Apply a 10-item policy design checklist.
-1. Classify coverage using score thresholds.
-1. Run substantive element tests for requirements that contain specific mandatory elements.
-1. Apply conservative override where the evidence is insufficient or contradictory.
-
-### Phase D — Classification and Prioritisation (S12-S13)
-
-12. Classify design-level gaps into four practical categories.
-1. Assign review priority scores for human reviewer workflow.
-
-```
-EBA LOM requirements + internal policy documents
-        |
-        v
-[A. Structuring]
-Atomic requirements -> applicability -> evidence units -> ontology -> graph
-        |
-        v
-[B. Retrieval]
-Six-signal hybrid retrieval -> evidence pack
-        |
-        v
-[C. Scoring]
-10-item checklist -> threshold class -> substantive tests -> conservative override
-        |
-        v
-[D. Reviewer Handoff]
-Design gap category -> priority score -> human review
-```
-
------
-
-## Why Move from LLM Judgement to Quantitative Scoring?
-
-The previous framework relied heavily on LLM judgement to classify each requirement as Covered, Partially Covered, or Gap. The categories were useful, but the judgement process had two weaknesses.
-
-**First, it was not transparent enough.** When the model returned "Partially Covered", it was hard to see which dimension was weak, how weak it was, and what evidence drove the conclusion.
-
-**Second, it was not stable enough.** The same requirement could produce a different classification on rerun, without a clear way to tell whether the change came from new evidence or model randomness.
-
-The current version introduces quantitative retrieval and checklist-based scoring. The point is not to pretend that the number is perfectly precise. The point is to make the judgement traceable, challengeable, and replaceable.
-
------
-
-## Six-Signal Hybrid Retrieval
-
-The retrieval stage uses a weighted hybrid formula:
+The V10 architecture therefore separates responsibilities:
 
 ```text
-hybrid_score = 0.30 × lexical_score          // BM25 / word-level TF-IDF
-             + 0.20 × lsa_score              // truncated SVD semantic proxy
-             + 0.15 × char_tfidf_score       // character n-gram similarity
-             + 0.15 × keyword_overlap_score  // Jaccard keyword overlap
-             + 0.15 × metadata_score         // family / lifecycle / scope match
-             + 0.05 × graph_score            // cross-reference graph score
+Regulatory text
+→ decomposition
+→ evidence retrieval
+→ component-level LLM judgement
+→ deterministic gate engine
+→ reviewer validation
+→ final workbook / audit pack
 ```
 
-Each component score is stored separately, and the formula text is saved alongside the result. If a retrieved evidence pack looks wrong, the reviewer can inspect which signal pulled the score up or down.
+Copilot is no longer positioned as the final decision-maker. It acts as a controlled component-level judgement assistant. Python handles deterministic gates, roll-up rules, audit trail generation, workbook output, and version comparison. Human reviewers confirm final status, materiality, overrides, and remediation actions.
 
-This is a practical auditability improvement: retrieval quality can now be reviewed signal by signal, instead of being treated as a black-box LLM output.
+A more accurate description of this use case is:
+
+> **A policy-design gap assessment assistant that supports evidence-grounded review, deterministic roll-up, reviewer validation, and audit trail generation.**
+
+It is not a compliance decision system and does not assess execution effectiveness.
 
 -----
 
-## Ten-Item Policy Design Checklist
+## Core Lesson: Retrieval Is Not the Compliance Conclusion
 
-The coverage scoring stage uses a 10-item binary checklist. Each item is scored 1 or 0, then divided by 10.
+RAG is useful for evidence discovery, but regulatory gap analysis is not a standard retrieval-and-answer task.
 
-Examples of design checks include:
+A regulatory requirement can contain:
 
-- Is the policy principle stated?
-- Are procedure steps defined?
-- Is governance or approval responsibility clear?
-- Are required roles or ownership identified?
-- Are escalation, exception, or monitoring mechanisms described where relevant?
-- Is the evidence tied to the right lifecycle stage and policy scope?
+- Subject and responsibility
+- Required action
+- Scope and applicability conditions
+- Minimum standards or thresholds
+- Governance and approval expectations
+- Procedure requirements
+- Documentation requirements
+- Controls, exceptions, and review triggers
+- Specific substantive objects that must be considered
 
-Coverage thresholds:
+A policy passage can be semantically similar to a regulatory paragraph while still failing to cover a required legal component. For example, internal policy may mention general borrower creditworthiness, but not the specific cash-flow, governance, documentation, or minimum-standard element required by EBA.
 
-| Checklist score | Default result |
+The workflow therefore treats retrieval scores as support for evidence discovery only. They do not directly determine whether a requirement is covered, partially covered, or a gap.
+
+-----
+
+## Scope Boundary: Policy Design, Not Execution Effectiveness
+
+The workflow assesses **internal policy design only**.
+
+It asks whether the internal documents contain the necessary policy principles, procedures, governance routes, responsibilities, documentation requirements, controls, or minimum standards.
+
+It does not ask whether those policies were actually performed in live cases, whether audit samples prove execution, or whether operational teams followed the procedure in practice.
+
+This boundary matters because earlier versions could produce statements such as:
+
+> "The policy covers this requirement, but audit samples are needed to confirm implementation."
+
+That mixes two different questions. Missing audit samples are not a policy-design gap. They are an execution verification issue. Execution evidence may be recorded as a follow-up item, but it should not be used to create or remove a policy-design gap.
+
+-----
+
+## Target Architecture
+
+```text
+Python:
+PDF extraction
+chunking
+evidence units
+hybrid retrieval
+component bundle construction
+deterministic gate engine
+audit trail
+workbook generation
+version comparison
+
+Copilot:
+component-level legal sufficiency judgement
+reasoning draft
+gap explanation draft
+
+Human reviewer:
+final judgement
+override
+materiality validation
+remediation decision
+```
+
+The operating principle is simple:
+
+> Copilot performs controlled component judgement, Python performs reproducible decision logic, and compliance / credit experts perform final review.
+
+This architecture is intended for an internal banking environment: it does not rely on external APIs for the core workflow, does not transfer final compliance judgement to an LLM, and preserves reviewer override plus a full audit trail.
+
+-----
+
+## Phase 1: Regulatory Decomposition
+
+**Input**: EBA LOM P001-P277
+
+**Output**:
+
+```text
+EBA paragraph
+→ regulatory atom
+→ material legal element
+→ typed legal component tests
+```
+
+The project has moved beyond matching entire regulatory paragraphs against internal policy text. Each regulatory paragraph is decomposed into smaller units that can be judged separately.
+
+Current decomposition direction:
+
+```text
+EBA paragraph
+→ regulatory atom
+→ legal element
+→ typed legal component
+→ evidence bundle
+→ component judgement
+→ element roll-up
+→ requirement-level decision
+```
+
+Each component becomes a question that can be adjudicated against evidence:
+
+```text
+component_id
+component_type
+component_question
+must_show
+acceptable_evidence
+not_sufficient_if
+materiality
+```
+
+Example:
+
+```text
+component_type: procedure_test
+component_question: Does NBE P&P define a procedure to perform regular credit reviews for medium-sized or large enterprises?
+must_show: explicit review procedure, review frequency, or creditworthiness reassessment step
+acceptable_evidence: policy clause, procedure step, credit assessment template, approval checklist
+not_sufficient_if: only generic borrower monitoring is mentioned
+materiality: material
+```
+
+Indicative component taxonomy:
+
+| Component type | Question it tests |
 |---|---|
-| ≥ 0.80 | Covered |
-| 0.45-0.80 | Partially covered |
-| < 0.45 | Not covered |
-
-The checklist does not replace expert review. It makes the route to the classification visible.
+| action_test | Does policy require the action demanded by the regulation? |
+| responsibility_test | Is ownership or accountable party defined? |
+| scope_test | Does the policy scope match the regulatory scope? |
+| condition_trigger_test | Are triggering conditions captured? |
+| threshold_test | Are minimum standards or thresholds included? |
+| governance_test | Are approval, escalation, or committee routes clear? |
+| control_test | Are controls or monitoring mechanisms designed? |
+| procedure_test | Are procedure steps defined? |
+| documentation_test | Are records, evidence, or documentation requirements stated? |
+| exception_test | Are exceptions or overrides governed? |
+| substantive_object_test | Are specific required factors or objects explicitly covered? |
 
 -----
 
-## Substantive Element Testing: P188 Example
+## Phase 2: Component-Level Evidence Retrieval
 
-The checklist captures general design completeness, but some EBA requirements include specific mandatory elements. For those, a separate substantive test is needed.
+**Input**: typed component tests + internal P&P evidence units
 
-For example, EBA LOM P188 concerns the main repayment source and cash flow assessment for project finance. The assessment should explicitly cover four substantive elements:
+The mature part of the workflow is the evidence discovery layer. Current structured assets include:
 
-1. The main repayment source is project income.
-1. Project cash flow is assessed.
-1. Future income-generating capacity after completion is assessed.
-1. Regulatory and legal constraints affecting profitability are explicitly considered, such as price regulation, availability-based payment arrangements, or environmental legislation.
+- 277 EBA paragraphs / requirements
+- 536 legal elements
+- 865 evidence units extracted from 12 internal NBE P&P documents
+- Hybrid retrieval with stored BM25, LSA, character TF-IDF, keyword overlap, metadata, and graph score components
 
-An illustrative calculation under the current logic:
+Earlier versions focused mainly on paragraph-level retrieval. V10 adds component-level retrieval because different components require different evidence.
 
-| Field | Result |
+For example:
+
+```text
+action_test query
+scope_test query
+procedure_test query
+documentation_test query
+governance_test query
+```
+
+The evidence bundle combines multiple retrieval routes:
+
+```text
+paragraph-level top evidence
++ component-specific evidence
++ cross-reference evidence
++ same-section neighbouring evidence
+```
+
+Evidence bundle output:
+
+```text
+evidence_bundle_id
+evidence_unit_ids
+retrieval_scores
+retrieval_reason
+source_document
+section/page reference
+```
+
+Retrieval scores remain visible and auditable, but they are not coverage decisions.
+
+-----
+
+## Phase 3: Copilot / LLM Component Judge
+
+Copilot answers one controlled question at a time:
+
+> Given this component test and this evidence bundle, is this component covered by NBE policy design?
+
+The LLM is constrained to the supplied evidence bundle and must output a fixed schema:
+
+```json
+{
+  "component_id": "...",
+  "coverage_label": "Explicitly covered | Implicitly covered | Weak / partial | Not evidenced | Contradicted / below minimum | Not applicable",
+  "cited_evidence_ids": ["..."],
+  "cited_snippets": ["..."],
+  "reasoning": "...",
+  "gap_type": "policy wording gap | scope gap | procedure gap | governance gap | documentation gap | control gap | minimum standard gap | none",
+  "materiality": "material | non-material",
+  "confidence": "high | medium | low",
+  "review_required": true
+}
+```
+
+Key judgement rules:
+
+- The LLM cannot cite content outside the evidence bundle.
+- Without an evidence ID, it cannot label a component as covered.
+- Implicit coverage does not automatically equal design covered.
+- Context can support applicability, but cannot erase an identified gap.
+- Execution evidence is excluded from policy-design gap conclusions.
+
+This turns Copilot into a bounded component judge, not an open-ended compliance opinion generator.
+
+-----
+
+## Phase 4: Deterministic Gate Engine
+
+Final status is not determined by Copilot and not by averaging similarity scores.
+
+Python applies deterministic gates and roll-up rules. Same input plus same rules should produce the same output.
+
+Four decisive gates:
+
+```text
+Gate 1: Applicability
+Gate 2: Evidence source adequacy
+Gate 3: Typed component coverage
+Gate 4: Conflict / below-minimum internal standard
+```
+
+Illustrative roll-up logic:
+
+```text
+if Gate 1 = Not applicable:
+    final_status = Not applicable
+
+elif Gate 1 = Conditionally applicable:
+    final_status = Conditionally applicable
+
+elif Gate 2 = Insufficient evidence:
+    final_status = Insufficient evidence
+
+elif any component = Contradicted / below minimum:
+    final_status = Potential policy conflict
+
+elif any mandatory material component = Not evidenced:
+    final_status = Not design covered
+
+elif any material component = Weak / partial:
+    final_status = Partially covered
+
+elif any material component = Implicitly covered:
+    final_status = Partially covered unless reviewer override
+
+else:
+    final_status = Design covered
+```
+
+This is a major change from the previous threshold approach, where a high checklist score could become "Covered". In V10, required components and hard gates matter more than averages.
+
+-----
+
+## Phase 5: Audit Trail and Evidence Pack
+
+Every EBA paragraph must retain a complete audit trail:
+
+```text
+eba_paragraph_id
+eba_text_hash
+legal_element_ids
+component_ids
+evidence_bundle_id
+evidence_unit_ids
+retrieval_score_components
+llm_prompt_version
+llm_output_version
+component_labels
+rollup_rule_fired
+final_status_before_override
+reviewer_override_status
+reviewer_name
+review_date
+override_reason
+```
+
+Primary outputs:
+
+```text
+1. assessment_workbook.xlsx
+2. audit_pack.json / csv
+```
+
+The workbook is designed for reviewer workflow. The audit pack is designed for model governance, internal audit, second-line challenge, and future version comparison.
+
+-----
+
+## Phase 6: Reviewer Workflow
+
+Reviewers should not be asked to read 277 full records in flat order. The workflow prioritises cases by risk and review need.
+
+Priority levels:
+
+| Priority | Records |
 |---|---|
-| policy_checklist_score | 0.70 (7/10) |
-| substantive_p188_score | 0.75 (3/4 substantive elements met) |
-| default_quantitative_result | Partially covered |
-| conservative_override_applied | No |
-| **final_design_coverage** | **Partially covered** |
+| Priority 1 | Potential policy conflict; Not design covered; Insufficient evidence on material requirement |
+| Priority 2 | Partially covered; Implicitly covered material components; Low-confidence LLM judgement |
+| Priority 3 | Design covered with high confidence; Not applicable |
 
-The missing item is the fourth substantive element: the policy covers project repayment source, cash flow analysis, and credit committee governance, but does not explicitly list the types of regulatory or legal constraints required by EBA.
+Reviewer fields:
 
-This is a **policy wording gap**. It is not a missing operating process. The remediation is different, so the gap category needs to be different.
+```text
+agree_with_ai
+override_status
+override_reason
+required_policy_action
+owner
+target_date
+management_comment
+```
 
------
+The reviewer is not expected to rerun the AI. The reviewer validates:
 
-## Gap Classification
-
-This version replaces the previous six-dimensional severity scoring and eight-category gap taxonomy with a smaller set of design-level categories.
-
-The previous taxonomy looked comprehensive, but it was difficult for reviewers to act on. When a single requirement had six dimensions scored from 1 to 3, the reviewer still had to interpret what to do next.
-
-The current structure is simpler:
-
-- The checklist shows how many design components are covered.
-- The threshold gives the default coverage class.
-- The substantive test shows what specific required element is missing.
-- The gap category points to the practical remediation route.
-
-Current design-level gap categories are limited to four:
-
-| Gap category | Meaning |
-|---|---|
-| Policy wording gap | The concept exists, but required wording or specific elements are missing |
-| Procedure design gap | The policy principle exists, but procedure steps are not sufficiently defined |
-| Governance design gap | Ownership, approval, escalation, or committee responsibility is unclear |
-| No policy coverage | No relevant policy design evidence was found |
+- Whether the cited evidence is correct
+- Whether the gap is real
+- Whether materiality is reasonable
+- Whether remediation ownership is clear
 
 -----
 
-## Conservative Override
+## Phase 7: Gold Set Calibration
 
-Quantitative scores should not automatically become final conclusions. A conservative override can still change the final design coverage where the evidence is weak, conflicting, or too indirect.
+Before running all 277 EBA paragraphs, the next step is a 30-item calibration set.
 
-Examples:
+The gold set should cover:
 
-- A high checklist score is based on evidence from the wrong policy scope.
-- Retrieved evidence is semantically similar but not actually responsive to the requirement.
-- Substantive mandatory elements are missing even though general policy design is strong.
-- Internal policy documents conflict with each other.
+```text
+clearly covered
+clearly not covered
+partial wording gap
+scope gap
+procedure gap
+documentation gap
+governance gap
+minimum standard gap
+conditionally applicable
+insufficient evidence
+potential conflict
+```
 
-This keeps the scoring model useful without letting the score overrule reviewer judgement.
+Calibration workflow:
+
+```text
+AI output
+→ deterministic gate result
+→ human reviewer label
+→ error log
+→ prompt / rule adjustment
+```
+
+Key metrics:
+
+```text
+status agreement rate
+material gap recall
+false covered rate
+evidence citation accuracy
+reviewer override rate
+```
+
+The most important control metric is **false covered rate**. In a banking control environment, classifying a real gap as covered is more dangerous than classifying a covered item as partial.
+
+-----
+
+## Phase 8: Prompt and Rule Impact Analysis
+
+Every change to prompts, component taxonomy, or gate rules should be tested against the same gold set.
+
+Comparison examples:
+
+```text
+v9.1 vs v10.0
+prompt_a vs prompt_b
+gate_rule_v1 vs gate_rule_v2
+```
+
+Impact report output:
+
+```text
+status changed paragraphs
+component labels changed
+new gaps created
+old gaps removed
+reason for change
+```
+
+Without an impact report, the production version should not be replaced.
+
+-----
+
+## Evolution from Earlier Versions
+
+### Initial RAG Approach
+
+The first design treated the task as a retrieval problem. EBA requirements and internal P&P documents were loaded into knowledge bases and compared directly. This was abandoned because RAG is not designed for clause-by-clause, auditable regulatory gap assessment.
+
+### Pipeline Decomposition
+
+The next design split applicability judgement from coverage judgement. This was an important correction: one module determines whether the requirement applies; another assesses whether internal policy design covers it.
+
+### Quantitative Retrieval and Checklist Scoring
+
+The following version introduced hybrid retrieval scores and a 10-item policy design checklist. This improved traceability, but the coverage decision still relied too heavily on scoring thresholds.
+
+### V10 Component-Level Workflow
+
+V10 keeps the evidence discovery improvements, but moves the core judgement to typed component tests, controlled LLM component judgement, deterministic gates, and human reviewer validation.
 
 -----
 
@@ -222,41 +464,29 @@ This keeps the scoring model useful without letting the score overrule reviewer 
 
 | Component | Status | Notes |
 |---|---|---|
-| RAG failure diagnosis | ✅ Complete | Retrieval-only architecture abandoned for structured comparison |
-| Applicability / coverage split | ✅ Complete | Each module has one primary judgement task |
-| Single-requirement end-to-end flow | ✅ Complete | Flow validated on one requirement |
-| Platform migration | ✅ Complete | Workflow moved from Dify to Microsoft Copilot |
-| Python processing code | 🔄 In progress | Developed with GPT-5.5 assistance |
-| Quantitative retrieval | ✅ Complete | Six-signal hybrid formula defined |
-| Checklist scoring | ✅ Complete | 10-item binary policy design checklist implemented conceptually |
-| Substantive element testing | ✅ Complete | Illustrated through P188 logic |
-| Coverage decision model | 📋 Next | Upgrade from threshold scoring to five-gate decision model |
-
------
-
-## Next Step: Five-Gate Coverage Decision Model
-
-The current coverage decision still has a limitation: a checklist score of 0.80 or above can become "Covered", which still treats a high score as equivalent to sufficient coverage.
-
-The next version will replace this with five gates that must be passed sequentially:
-
-1. Applicability judgement
-1. Evidence sufficiency judgement
-1. Necessary component judgement
-1. Substantive element judgement
-1. Conflict detection
-
-This should make the coverage decision more robust than a threshold score alone.
+| RAG failure diagnosis | ✅ Complete | Retrieval-only framing abandoned |
+| Policy-design scope boundary | ✅ Complete | Execution effectiveness excluded from gap conclusion |
+| Regulatory decomposition | 🔄 In progress | EBA paragraphs → atoms → legal elements → component tests |
+| Evidence unit extraction | ✅ Initial version complete | 865 evidence units from 12 internal NBE P&P documents |
+| Hybrid retrieval | ✅ Initial version complete | BM25, LSA, char TF-IDF, keyword overlap, metadata, graph scores retained |
+| Component-level retrieval | 🔄 In design | Retrieval by action, scope, procedure, documentation, governance, and other component types |
+| Copilot component judge | 🔄 In design | Fixed-schema judgement constrained to evidence bundle |
+| Deterministic gate engine | 🔄 In design | Python roll-up and hard gates replace threshold-only decisioning |
+| Workbook / audit pack | 📋 Next | Reviewer workbook plus JSON / CSV audit pack |
+| Gold set calibration | 📋 Next | 30-item reviewer-labelled calibration set before full 277-paragraph run |
+| Prompt / rule impact analysis | 📋 Next | Version comparison required before production replacement |
 
 -----
 
 ## Lessons Learnt
 
-1. Define the assessment boundary before designing the model. Policy design and execution effectiveness are different questions.
-1. LLM judgement is useful, but unsupported categorical output is too opaque for compliance review.
-1. Quantitative scoring is valuable when it improves traceability, not because the number is inherently precise.
-1. Substantive element tests are needed where a regulation requires specific named components.
-1. Simpler gap categories can be more useful than a more comprehensive taxonomy if they map directly to remediation actions.
+1. The task is not "make RAG better"; it is evidence-grounded regulatory reasoning.
+1. Retrieval finds candidate evidence, but does not decide compliance sufficiency.
+1. Policy design and execution effectiveness must be kept separate.
+1. Component-level judgement is more reviewable than paragraph-level similarity.
+1. Final status should be produced by deterministic gates, not by LLM confidence or average scores.
+1. Gold set calibration is necessary before scaling to all 277 requirements.
+1. False covered rate is the most important error to control in a banking environment.
 
 -----
 
@@ -265,7 +495,7 @@ This should make the coverage decision more robust than a threshold score alone.
 | Project | Status |
 |---|---|
 | AI News Alarm | ✅ Deployed |
-| Regulatory Gap Analysis | 🔄 v3 quantitative scoring complete; next step is five-gate coverage decision |
+| Regulatory Gap Analysis | 🔄 V10 component-level workflow in calibration |
 | Sector Research Agent | ✅ Deployed |
 | Junior Credit Analyst | 🧪 Workflow testing |
 
