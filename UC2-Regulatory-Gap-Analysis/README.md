@@ -150,7 +150,7 @@ Example:
 
 ```text
 component_type: procedure_test
-component_question: Does NBE P&P define a procedure to perform regular credit reviews for medium-sized or large enterprises?
+component_question: Do the bank's internal P&P define a procedure to perform regular credit reviews for medium-sized or large enterprises?
 must_show: explicit review procedure, review frequency, or creditworthiness reassessment step
 acceptable_evidence: policy clause, procedure step, credit assessment template, approval checklist
 not_sufficient_if: only generic borrower monitoring is mentioned
@@ -183,7 +183,7 @@ The mature part of the workflow is the evidence discovery layer. Current structu
 
 - 277 EBA paragraphs / requirements
 - 536 legal elements
-- 865 evidence units extracted from 12 internal NBE P&P documents
+- 865 evidence units extracted from 12 internal P&P documents
 - Hybrid retrieval with stored BM25, LSA, character TF-IDF, keyword overlap, metadata, and graph score components
 
 Earlier versions focused mainly on paragraph-level retrieval. V10 adds component-level retrieval because different components require different evidence.
@@ -226,7 +226,7 @@ Retrieval scores remain visible and auditable, but they are not coverage decisio
 
 Copilot answers one controlled question at a time:
 
-> Given this component test and this evidence bundle, is this component covered by NBE policy design?
+> Given this component test and this evidence bundle, is this component covered by the bank's internal policy design?
 
 The LLM is constrained to the supplied evidence bundle and must output a fixed schema:
 
@@ -467,7 +467,7 @@ V10 keeps the evidence discovery improvements, but moves the core judgement to t
 | RAG failure diagnosis | ✅ Complete | Retrieval-only framing abandoned |
 | Policy-design scope boundary | ✅ Complete | Execution effectiveness excluded from gap conclusion |
 | Regulatory decomposition | 🔄 In progress | EBA paragraphs → atoms → legal elements → component tests |
-| Evidence unit extraction | ✅ Initial version complete | 865 evidence units from 12 internal NBE P&P documents |
+| Evidence unit extraction | ✅ Initial version complete | 865 evidence units from 12 internal P&P documents |
 | Hybrid retrieval | ✅ Initial version complete | BM25, LSA, char TF-IDF, keyword overlap, metadata, graph scores retained |
 | Component-level retrieval | 🔄 In design | Retrieval by action, scope, procedure, documentation, governance, and other component types |
 | Copilot component judge | 🔄 In design | Fixed-schema judgement constrained to evidence bundle |
