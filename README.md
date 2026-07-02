@@ -9,7 +9,7 @@ A collection of AI deployment use cases in credit risk analysis — real impleme
 |#  |Project                                                           |Description                                                                  |Status                            |
 |---|------------------------------------------------------------------|-----------------------------------------------------------------------------|----------------------------------|
 |UC1|[AI News Alarm](./UC1-AI-News-Alarm/README.md)                    |Automated daily sector intelligence briefing via dual-LLM agentic workflow   |✅ Deployed                        |
-|UC2|[Regulatory Gap Analysis](./UC2-Regulatory-Gap-Analysis/README.md)|Automated P&P vs EBA guideline gap analysis using two-LLM serial architecture|🔧 Architecture rebuild in progress|
+|UC2|[Regulatory Gap Analysis](./UC2-Regulatory-Gap-Analysis/README.md)|Quantified policy-design gap analysis using hybrid retrieval and checklist scoring|🔄 v3 scoring complete          |
 |UC3|[Sector Research Agent](./UC3-Sector-Research-Agent/README.md)    |On-demand sector research reports via Copilot Agent + prompt template        |✅ Deployed                        |
 |UC4|[Junior Credit Analyst](./UC4-Junior-Credit-Analyst/README.md)    |Copilot-assisted due diligence and monitoring workflow with source-cited outputs|🧪 Workflow testing              |
 
