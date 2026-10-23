@@ -1,6 +1,104 @@
 # UC2 Regulatory Gap Analysis — Evidence-Grounded Policy Design Review Workflow
 
-> **Status**: 📋 V10 design complete; gold-set calibration next | **Platform**: Microsoft Copilot + Python | **Scope**: Policy design assessment only | **Control Point**: Human reviewer owns final judgement
+> **Status**: 🔧 First end-to-end test complete (single policy domain: forbearance); V10 full-scope design documented below | **Platform**: Microsoft Copilot + Python | **Scope**: Policy design assessment only | **Control Point**: Human reviewer owns final judgement
+
+-----
+
+## Latest Update: Limited-Scope End-to-End Test (October 2026)
+
+V10 remains the full-scope target design. Within the capability of the models currently available internally, this round narrowed the scope to a single policy domain, **forbearance**, and ran a seven-stage, gate-controlled policy review workflow end to end.
+
+This section documents the method only. Findings from the test relate to an internal policy and are not published.
+
+### Design goal
+
+Every final finding must be traceable from a regulatory source, through obligation extraction, applicability, policy location, clause mapping and cross-policy validation, to one focused and remediable policy requirement.
+
+The method is built to avoid two common failure modes:
+
+- **Regulation stacking**: collecting many sources and keyword-matching them against policy, which mixes legal requirements, supervisory expectations, best practice and control preferences.
+- **Count-driven findings**: splitting one issue into several, or restating related issues, so the gap list grows long but cannot be turned into an executable policy change.
+
+### Seven stages, each closed by a gate
+
+| Stage | Purpose | Key control |
+|---|---|---|
+| 1. Document intake and baseline | Fix the document inventory: version, effective date, owner, controlled status, completeness | No substantive analysis until upload is explicitly complete and the inventory is frozen |
+| 2. Regulatory as-of point | Record each source's version, amendment status, application date, exact provision and verified official link | Sources aligned to the policy's target implementation date and classified by authority type |
+| 3. Institutional applicability profile | Legal entity, business model, exposures, accounting framework, reporting scope, governance | Profile must support an applicable / not applicable / partially applicable / to be confirmed call for every obligation |
+| 4. Atomic obligation extraction | Decompose source text bottom-up: source → proposition → atomic obligation → applicability | Support-strength test on every candidate; the obligation count emerges, it is not set in advance |
+| 5. Policy location test | Decide where each obligation should live before judging coverage | Every obligation assigned to one of four locations |
+| 6. Primary mapping and cross-policy validation | Map to exact page, section and current text; then test related policies | Definitions, triggers, ownership and approval authority checked for consistency; hand-offs confirmed as received |
+| 7. Focused gaps | Atomic, evidence-linked gaps with a clear boundary | Gap list limited to changes to the target policy or hand-offs it must establish; other issues go to a separate related-policy log |
+
+Gates keep scope from drifting, stop conclusions from being reasoned backwards from a preferred answer, and keep rework local: a wrong source version sends the review back to one stage, not to the start.
+
+### Support-strength test
+
+| Category | Treatment |
+|---|---|
+| Direct requirement | Obligation register |
+| Necessary implication | Obligation register |
+| Supervisory interpretation | Obligation register |
+| Reasonable control design | Separate control-design recommendations log |
+| No support | Removed |
+
+This prevents a reviewer's preferred process design from being presented as a regulatory obligation.
+
+### Policy location test
+
+"The regulation requires it and the target policy does not say it, so it is a gap" is not always true. Each obligation is placed in one of four locations:
+
+1. Core rule that must be written into the target policy (scope, definitions, judgement principles, responsibilities, approvals).
+2. Detail that may sit in another document, provided the target policy establishes a controlled reference.
+3. Fully carried by another controlled document, provided hierarchy, ownership and interfaces are clear.
+4. Implementation or operating evidence. Its absence from the policy text is not a policy gap.
+
+A controlled reference names the referenced document, the delegated matter, the trigger, the responsible function, the independent review or approval function, the record produced, where it is stored, and the escalation route. A "related documents" list on the cover page is not enough.
+
+### Human validation, drafting and implementation
+
+- **Independent validation gate.** After gap assessment, a reviewer with regulatory, risk, accounting or business expertise confirms the regulatory basis, applicability, whether other controlled documents were missed, whether the gap requires a change to the target policy, and whether findings should be merged. Only validated gaps proceed to drafting.
+- **Formal policy language.** Drafts state who acts, on what trigger, what assessment is required, who independently reviews or approves, by when, what record is produced, where it is kept, and how exceptions escalate. Advisory wording such as "consider strengthening" is not accepted.
+- **No automatic cross-framework conclusions.** Where prudential classification, accounting classification and regulatory reporting interact, each framework's determination is made and recorded separately.
+- **Tracked changes.** Approved wording is inserted into the current effective version as tracked changes, each mapped to its gap ID, rather than rewriting an "ideal" policy.
+
+### End-to-end trace
+
+```text
+Regulatory source
+→ exact provision
+→ source proposition
+→ atomic obligation
+→ applicability conclusion
+→ policy location
+→ primary policy mapping
+→ cross-policy validation
+→ focused gap
+→ human validation
+→ proposed policy wording
+→ tracked change
+→ approval and implementation evidence
+```
+
+The trace runs in both directions: from any tracked change, a reviewer can reach the gap, the obligation and the regulatory source.
+
+### Deliverables
+
+- **Management review report**: what needs to change, why, and who owns it.
+- **Reproducible workpaper**: document inventory, regulatory sources, institutional profile, source propositions, atomic obligations, policy locations, primary mapping, cross-policy tests, focused gaps, related-policy issues, evidence limitations, stage gates, open items, change log, end-to-end trace and data-quality checks. Stable unique IDs allow the analysis to be reproduced without chat history or personal notes, and data-quality checks flag broken trace links, obligations without sources, unverified links or page references, and blanks confused with "not applicable" or "not available".
+
+### What this test shows, and what it does not
+
+- **Shows**: the full chain runs end to end on one policy domain.
+- **Does not yet show**: stability, accuracy, or performance on policy domains that rely more heavily on judgement. Forbearance requirements are unusually specific, which makes it a relatively favourable first domain.
+- **Next**: reviewer labels on the output to obtain a first confirmation rate, then gold-set calibration (Phase 7 below).
+
+### Relationship to V10
+
+Both lines rest on the same principle: decompose regulatory text into atomic, testable obligations before touching policy text. V10 adds typed component tests, a controlled LLM component judge and a deterministic Python gate engine, intended for a full 277-paragraph run. The seven-stage workflow applies the same principle within a single policy domain.
+
+The sections below document the V10 full-scope design.
 
 -----
 
@@ -458,12 +556,17 @@ The following version introduced hybrid retrieval scores and a 10-item policy de
 
 V10 keeps the evidence discovery improvements, but moves the core judgement to typed component tests, controlled LLM component judgement, deterministic gates, and human reviewer validation.
 
+### Limited-Scope End-to-End Test
+
+Within current internal model capability, scope was narrowed to a single policy domain (forbearance) and a seven-stage, gate-controlled workflow was run end to end on that policy. See the Latest Update section above.
+
 -----
 
 ## Current Status
 
 | Component | Status | Notes |
 |---|---|---|
+| Limited-scope end-to-end test | ✅ First run complete | Seven-stage gated workflow; forbearance policy only; findings kept internal |
 | RAG failure diagnosis | ✅ Complete | Retrieval-only framing abandoned |
 | Policy-design scope boundary | ✅ Complete | Execution effectiveness excluded from gap conclusion |
 | Regulatory decomposition | 🔄 In progress | EBA paragraphs → atoms → legal elements → component tests |
@@ -487,6 +590,9 @@ V10 keeps the evidence discovery improvements, but moves the core judgement to t
 1. Final status should be produced by deterministic gates, not by LLM confidence or average scores.
 1. Gold set calibration is necessary before scaling to all 277 requirements.
 1. False covered rate is the most important error to control in a banking environment.
+1. Narrowing scope to one policy domain made an end-to-end run possible within current internal model capability.
+1. A requirement missing from the target policy is not automatically a gap: test where it should live first.
+1. Lock the document set and the regulatory as-of date before forming any view; early conclusions cause the most rework.
 
 -----
 
@@ -495,7 +601,7 @@ V10 keeps the evidence discovery improvements, but moves the core judgement to t
 | Project | Status |
 |---|---|
 | AI News Alarm | ✅ Deployed |
-| Regulatory Gap Analysis | 📋 V10 design complete; gold-set calibration next |
+| Regulatory Gap Analysis | 🔧 First end-to-end test complete (forbearance); calibration next |
 | Sector Research Agent | ✅ Deployed |
 | New Financing Due Diligence Workflow | ✅ Shared |
 
