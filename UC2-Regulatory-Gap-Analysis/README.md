@@ -1,14 +1,14 @@
 # UC2 Regulatory Gap Analysis — Evidence-Grounded Policy Design Review Workflow
 
-> **Status**: 🔧 First end-to-end test complete (single policy domain: forbearance); V10 full-scope design documented below | **Platform**: Microsoft Copilot + Python | **Scope**: Policy design assessment only | **Control Point**: Human reviewer owns final judgement
+> **Status**: 🔧 End-to-end runs complete on four policy areas, one area at a time; V10 full-scope design documented below | **Platform**: Microsoft Copilot + Python | **Scope**: Policy design assessment only | **Control Point**: Human reviewer owns final judgement
 
 -----
 
-## Latest Update: Limited-Scope End-to-End Test (October 2026)
+## Latest Update: Limited-Scope End-to-End Runs (October–November 2026)
 
-V10 remains the full-scope target design. Within the capability of the models currently available internally, this round narrowed the scope to a single policy domain, **forbearance**, and ran a seven-stage, gate-controlled policy review workflow end to end.
+V10 remains the full-scope target design. Within the capability of the models currently available internally, scope was narrowed to one policy area at a time, and a seven-stage, gate-controlled policy review workflow was run end to end. It has now run end to end on **four policy areas**.
 
-This section documents the method only. Findings from the test relate to an internal policy and are not published.
+This section documents the method only. Findings relate to internal policies and are not published.
 
 ### Design goal
 
@@ -88,15 +88,15 @@ The trace runs in both directions: from any tracked change, a reviewer can reach
 - **Management review report**: what needs to change, why, and who owns it.
 - **Reproducible workpaper**: document inventory, regulatory sources, institutional profile, source propositions, atomic obligations, policy locations, primary mapping, cross-policy tests, focused gaps, related-policy issues, evidence limitations, stage gates, open items, change log, end-to-end trace and data-quality checks. Stable unique IDs allow the analysis to be reproduced without chat history or personal notes, and data-quality checks flag broken trace links, obligations without sources, unverified links or page references, and blanks confused with "not applicable" or "not available".
 
-### What this test shows, and what it does not
+### What these runs show, and what they do not
 
-- **Shows**: the full chain runs end to end on one policy domain.
-- **Does not yet show**: stability, accuracy, or performance on policy domains that rely more heavily on judgement. Forbearance requirements are unusually specific, which makes it a relatively favourable first domain.
-- **Next**: reviewer labels on the output to obtain a first confirmation rate, then gold-set calibration (Phase 7 below).
+- **Shows**: the full chain runs end to end, one policy area at a time, across four policy areas.
+- **Scope and stability**: with the model available to the bank today, the narrower the policy area, the more consistent the output from run to run. The broadest area, with the most interfaces to other policies, was the least consistent. This is a limit of model capability, not of the workflow design.
+- **Does not yet show**: accuracy. Output that is consistent across runs is not necessarily correct; whether a finding is right remains a reviewer's call.
 
 ### Relationship to V10
 
-Both lines rest on the same principle: decompose regulatory text into atomic, testable obligations before touching policy text. V10 adds typed component tests, a controlled LLM component judge and a deterministic Python gate engine, intended for a full 277-paragraph run. The seven-stage workflow applies the same principle within a single policy domain.
+Both lines rest on the same principle: decompose regulatory text into atomic, testable obligations before touching policy text. V10 adds typed component tests, a controlled LLM component judge and a deterministic Python gate engine, intended for a full 277-paragraph run. The seven-stage workflow applies the same principle to one policy area at a time.
 
 The sections below document the V10 full-scope design.
 
@@ -556,9 +556,9 @@ The following version introduced hybrid retrieval scores and a 10-item policy de
 
 V10 keeps the evidence discovery improvements, but moves the core judgement to typed component tests, controlled LLM component judgement, deterministic gates, and human reviewer validation.
 
-### Limited-Scope End-to-End Test
+### Limited-Scope End-to-End Runs
 
-Within current internal model capability, scope was narrowed to a single policy domain (forbearance) and a seven-stage, gate-controlled workflow was run end to end on that policy. See the Latest Update section above.
+Within current internal model capability, scope was narrowed to one policy area at a time and a seven-stage, gate-controlled workflow was run end to end, first on one policy area and since then on three more. See the Latest Update section above.
 
 -----
 
@@ -566,7 +566,7 @@ Within current internal model capability, scope was narrowed to a single policy 
 
 | Component | Status | Notes |
 |---|---|---|
-| Limited-scope end-to-end test | ✅ First run complete | Seven-stage gated workflow; forbearance policy only; findings kept internal |
+| Limited-scope end-to-end runs | ✅ Four policy areas complete | Seven-stage gated workflow; one policy area per run; findings kept internal |
 | RAG failure diagnosis | ✅ Complete | Retrieval-only framing abandoned |
 | Policy-design scope boundary | ✅ Complete | Execution effectiveness excluded from gap conclusion |
 | Regulatory decomposition | 🔄 In progress | EBA paragraphs → atoms → legal elements → component tests |
@@ -590,7 +590,7 @@ Within current internal model capability, scope was narrowed to a single policy 
 1. Final status should be produced by deterministic gates, not by LLM confidence or average scores.
 1. Gold set calibration is necessary before scaling to all 277 requirements.
 1. False covered rate is the most important error to control in a banking environment.
-1. Narrowing scope to one policy domain made an end-to-end run possible within current internal model capability.
+1. The model sets the scope. With current internal models, narrowing to one policy area at a time made end-to-end runs possible, and the narrower the area, the more consistent the output.
 1. A requirement missing from the target policy is not automatically a gap: test where it should live first.
 1. Lock the document set and the regulatory as-of date before forming any view; early conclusions cause the most rework.
 
@@ -601,7 +601,7 @@ Within current internal model capability, scope was narrowed to a single policy 
 | Project | Status |
 |---|---|
 | AI News Alarm | ✅ Deployed |
-| Regulatory Gap Analysis | 🔧 First end-to-end test complete (forbearance); calibration next |
+| Regulatory Gap Analysis | 🔧 End to end on four policy areas |
 | Sector Research Agent | ✅ Deployed |
 | New Financing Due Diligence Workflow | ✅ Shared |
 
