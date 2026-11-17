@@ -1,12 +1,14 @@
 # UC2 Regulatory Gap Analysis — Evidence-Grounded Policy Design Review Workflow
 
-> **Status**: 🔧 End-to-end runs complete on four policy areas, one area at a time; V10 full-scope design documented below | **Platform**: Microsoft Copilot + Python | **Scope**: Policy design assessment only | **Control Point**: Human reviewer owns final judgement
+> **Status**: ⏸ Paused after end-to-end runs on four policy areas, one area at a time; V10 full-scope design documented below | **Platform**: Microsoft Copilot + Python | **Scope**: Policy design assessment only | **Control Point**: Human reviewer owns final judgement
 
 -----
 
 ## Latest Update: Limited-Scope End-to-End Runs (October–November 2026)
 
 V10 remains the full-scope target design. Within the capability of the models currently available internally, scope was narrowed to one policy area at a time, and a seven-stage, gate-controlled policy review workflow was run end to end. It has now run end to end on **four policy areas**.
+
+Development is now paused. With current model capabilities, further prompt optimisation offers diminishing returns. The next project is an Early Warning Engine.
 
 This section documents the method only. Findings relate to internal policies and are not published.
 
@@ -601,7 +603,7 @@ Within current internal model capability, scope was narrowed to one policy area 
 | Project | Status |
 |---|---|
 | AI News Alarm | ✅ Deployed |
-| Regulatory Gap Analysis | 🔧 End to end on four policy areas |
+| Regulatory Gap Analysis | ⏸ Paused after end-to-end runs on four policy areas |
 | Sector Research Agent | ✅ Deployed |
 | New Financing Due Diligence Workflow | ✅ Shared |
 
