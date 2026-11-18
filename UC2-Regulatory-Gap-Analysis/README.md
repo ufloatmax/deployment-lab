@@ -1,6 +1,6 @@
 # UC2 Regulatory Gap Analysis — Evidence-Grounded Policy Design Review Workflow
 
-> **Status**: ⏸ Paused after end-to-end runs on four policy areas, one area at a time | **Platform**: Microsoft Copilot | **Scope**: Policy design assessment only | **Control Point**: Human reviewer owns final judgement
+> **Status**: ⏸ Paused due to model capacity constraints, after end-to-end runs on four policy areas, one area at a time | **Platform**: Microsoft Copilot | **Scope**: Policy design assessment only | **Control Point**: Human reviewer owns final judgement
 
 -----
 
@@ -157,7 +157,7 @@ The trace runs in both directions: from any tracked change, a reviewer can reach
 | Project | Status |
 |---|---|
 | AI News Alarm | ✅ Deployed |
-| Regulatory Gap Analysis | ⏸ Paused after end-to-end runs on four policy areas |
+| Regulatory Gap Analysis | ⏸ Paused due to model capacity constraints, after end-to-end runs on four policy areas |
 | Sector Research Agent | ✅ Deployed |
 | New Financing Due Diligence Workflow | ✅ Shared |
 
