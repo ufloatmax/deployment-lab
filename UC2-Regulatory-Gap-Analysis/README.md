@@ -10,7 +10,7 @@ This workflow reviews internal credit policies against EBA guidelines and relate
 
 Within the capability of the models currently available internally, each run is limited to one policy area. A seven-stage, gate-controlled policy review workflow has been run end to end on **four policy areas**.
 
-Development is now paused. With current model capabilities, further prompt optimisation offers diminishing returns. The next project is an Early Warning Engine.
+Development is now paused because of model capacity constraints: with the models currently available internally, further prompt optimisation offers diminishing returns. The next project is an Early Warning Engine.
 
 This page documents the method only. Findings relate to internal policies and are not published.
 
@@ -136,7 +136,7 @@ The trace runs in both directions: from any tracked change, a reviewer can reach
 | Run-to-run consistency | ⚠️ Depends on scope | Narrower areas more consistent; the broadest area least consistent |
 | Accuracy | 📋 Not yet formally measured | Consistent output is not necessarily correct; reviewer judgement required |
 | Findings | 🔒 Internal | Only the method is published |
-| Development | ⏸ Paused | Further prompt optimisation offers diminishing returns with current models |
+| Development | ⏸ Paused | Model capacity constraints; further prompt optimisation offers diminishing returns with current models |
 
 -----
 
